@@ -1,8 +1,8 @@
 import logging
 
 import numpy
-import pandas as pd
 from scipy.io import loadmat
+from ttictoc import TicToc
 
 from models import interpolation, SRCNN_train, SRCNN_predict
 
@@ -17,6 +17,21 @@ logger = logging.getLogger(__name__)
 def application():
     """" All application has its initialization from here """
     logging.info('Main application is running!')
+    channel_net_train()
+
+
+class ElapsedTime(object):
+    """
+    Measure the elapsed time from "elapsed.t.tic()" to "elapsed.elapsed()"
+    """
+
+    def __init__(self):
+        self.t = TicToc('digest')
+
+    def elapsed(self):
+        self.t.toc()
+        _elapsed = self.t.elapsed
+        logger.info('< {} >'.format(_elapsed))
 
 
 class ChannelInfo:
@@ -39,7 +54,11 @@ def channel_net_train():
     """
     Deep Learning
     """
+    elapsed = ElapsedTime()
     channel_info = ChannelInfo()
+
+    # start counting
+    elapsed.t.tic()
 
     noisy_input = channel_info.noisy_input
     snr = channel_info.SNR
@@ -66,11 +85,7 @@ def channel_net_train():
     srcnn_pred_train = SRCNN_predict(train_data, channel_model, number_of_pilots, snr)
     srcnn_pred_validation = SRCNN_predict(train_data, channel_model, number_of_pilots, snr)
 
-    df_train = pd.DataFrame(srcnn_pred_train)
-    df_validation = pd.DataFrame(srcnn_pred_validation)
-
-    logger.info(df_train)
-    logger.info(df_validation)
+    elapsed.elapsed()
 
     # ------ training DNCNN ------
     # DNCNN_train(input_data, channel_model , Number_of_pilots , SNR):

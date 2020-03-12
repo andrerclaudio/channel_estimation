@@ -83,7 +83,7 @@ def SRCNN_model():
     c2 = Conv2D(32, (1, 1), activation="relu", padding="same", kernel_initializer="he_normal")(c1)
     c3 = Conv2D(1, (5, 5), padding="same", kernel_initializer="he_normal")(c2)
     # c4 = Input(shape = input_shape)(c3)
-    model = Model(input=x, output=c3)
+    model = Model(inputs=x, outputs=c3)
     # compile
     adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-8)
     model.compile(optimizer=adam, loss='mean_squared_error', metrics=['mean_squared_error'])
@@ -99,7 +99,7 @@ def SRCNN_train(train_data, train_label, val_data, val_label, channel_model, num
     callbacks_list = [checkpoint]
 
     srcnn_model.fit(train_data, train_label, batch_size=128, validation_data=(val_data, val_label),
-                    callbacks=callbacks_list, shuffle=True, epochs=2, verbose=0)
+                    callbacks=callbacks_list, shuffle=True, epochs=1, verbose=0)
 
     srcnn_model.save_weights("SRCNN_" + channel_model + "_" + str(num_pilots) + "_" + str(SNR) + ".h5")
 
