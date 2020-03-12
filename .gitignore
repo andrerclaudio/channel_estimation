@@ -6,6 +6,12 @@ __pycache__/
 # C extensions
 *.so
 
+# Matlab extensions
+*.mat
+
+# H5 files
+*.h5
+
 # Distribution / packaging
 .Python
 build/
