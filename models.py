@@ -30,18 +30,18 @@ def interpolation(noisy, snr, number_of_pilot, interp):
     idx = []
 
     if number_of_pilot == 48:
-        idx = [14 * i for i in range(1, 72, 6)] + [4 + 14 * (i) for i in range(4, 72, 6)] + \
+        idx = [14 * i for i in range(1, 72, 6)] + [4 + 14 * i for i in range(4, 72, 6)] + \
               [7 + 14 * i for i in range(1, 72, 6)] + [11 + 14 * i for i in range(4, 72, 6)]
     elif number_of_pilot == 16:
-        idx = [4 + 14 * i for i in range(1, 72, 9)] + [9 + 14 * (i) for i in range(4, 72, 9)]
+        idx = [4 + 14 * i for i in range(1, 72, 9)] + [9 + 14 * i for i in range(4, 72, 9)]
     elif number_of_pilot == 24:
         idx = [14 * i for i in range(1, 72, 9)] + [6 + 14 * i for i in range(4, 72, 9)] + [11 + 14 * i for i in
                                                                                            range(1, 72, 9)]
     elif number_of_pilot == 8:
-        idx = [4 + 14 * i for i in range(5, 72, 18)] + [9 + 14 * (i) for i in range(8, 72, 18)]
+        idx = [4 + 14 * i for i in range(5, 72, 18)] + [9 + 14 * i for i in range(8, 72, 18)]
     elif number_of_pilot == 36:
-        idx = [14 * (i) for i in range(1, 72, 6)] + [6 + 14 * (i) for i in range(4, 72, 6)] + [11 + 14 * i for i in
-                                                                                               range(1, 72, 6)]
+        idx = [14 * (i) for i in range(1, 72, 6)] + [6 + 14 * i for i in range(4, 72, 6)] + [11 + 14 * i for i in
+                                                                                             range(1, 72, 6)]
 
     r = [x // 14 for x in idx]
     c = [x % 14 for x in idx]
@@ -99,7 +99,7 @@ def SRCNN_train(train_data, train_label, val_data, val_label, channel_model, num
     callbacks_list = [checkpoint]
 
     srcnn_model.fit(train_data, train_label, batch_size=128, validation_data=(val_data, val_label),
-                    callbacks=callbacks_list, shuffle=True, epochs=1, verbose=0)
+                    callbacks=callbacks_list, shuffle=True, epochs=300, verbose=0)
 
     srcnn_model.save_weights("SRCNN_" + channel_model + "_" + str(num_pilots) + "_" + str(SNR) + ".h5")
 
