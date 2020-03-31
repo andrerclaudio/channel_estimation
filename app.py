@@ -1,4 +1,5 @@
 import logging
+from datetime import timedelta
 
 import numpy
 from scipy.io import loadmat
@@ -17,7 +18,9 @@ logger = logging.getLogger(__name__)
 def application():
     """" All application has its initialization from here """
     logging.info('Main application is running!')
-    channel_net_train()
+
+    # channel_net_train()
+    channel_net_predict()
 
 
 class ElapsedTime(object):
@@ -26,12 +29,13 @@ class ElapsedTime(object):
     """
 
     def __init__(self):
-        self.t = TicToc('digest')
+        self.t = TicToc(__name__)
 
     def elapsed(self):
         self.t.toc()
         _elapsed = self.t.elapsed
-        logger.info('< {} >'.format(_elapsed))
+        d = timedelta(seconds=_elapsed)
+        logger.info('< {} >'.format(d))
 
 
 class ChannelInfo:
@@ -46,19 +50,15 @@ class ChannelInfo:
         self.channel_model = "VehA"
         self.SNR = 12
         self.number_of_pilots = 48
-        self.perfect = loadmat("Perfect_" + "H_40000" + ".mat")['My_perfect_H']
+        self.perfect = loadmat("Perfect_H_40000.mat")['My_perfect_H']
         self.noisy_input = loadmat("My_noisy_H_12.mat")["My_noisy_H"]
 
 
-def channel_net_train():
+def channel_net_format_data():
     """
     Deep Learning
     """
-    elapsed = ElapsedTime()
     channel_info = ChannelInfo()
-
-    # start counting
-    elapsed.t.tic()
 
     noisy_input = channel_info.noisy_input
     snr = channel_info.SNR
@@ -79,15 +79,50 @@ def channel_net_train():
             1 / 9)  # uses 32000 from 36000 as training and the rest as validation
     train_data, train_label = interp_noisy[idx_random, :, :, :], perfect_image[idx_random, :, :, :]
     val_data, val_label = interp_noisy[~idx_random, :, :, :], perfect_image[~idx_random, :, :, :]
+
+    return train_data, train_label, val_data, val_label
+
+
+def channel_net_train():
+    channel_info = ChannelInfo()
+    elapsed = ElapsedTime()
+
+    elapsed.t.tic()
+
+    noisy_input = channel_info.noisy_input
+    snr = channel_info.SNR
+    perfect = channel_info.perfect
+    number_of_pilots = channel_info.number_of_pilots
+    channel_model = channel_info.channel_model
+
+    train_data, train_label, val_data, val_label = channel_net_format_data()
+
     SRCNN_train(train_data, train_label, val_data, val_label, channel_model, number_of_pilots, snr)
+
+    elapsed.elapsed()
+
+
+def channel_net_predict():
+    channel_info = ChannelInfo()
+    elapsed = ElapsedTime()
+
+    elapsed.t.tic()
+
+    noisy_input = channel_info.noisy_input
+    snr = channel_info.SNR
+    perfect = channel_info.perfect
+    number_of_pilots = channel_info.number_of_pilots
+    channel_model = channel_info.channel_model
+
+    train_data, train_label, val_data, val_label = channel_net_format_data()
 
     # ------ prediction using SRCNN ------
     srcnn_pred_train = SRCNN_predict(train_data, channel_model, number_of_pilots, snr)
     srcnn_pred_validation = SRCNN_predict(train_data, channel_model, number_of_pilots, snr)
 
-    elapsed.elapsed()
-
     # ------ training DNCNN ------
     # DNCNN_train(input_data, channel_model , Number_of_pilots , SNR):
+
+    elapsed.elapsed()
 
     return None

@@ -40,8 +40,8 @@ def interpolation(noisy, snr, number_of_pilot, interp):
     elif number_of_pilot == 8:
         idx = [4 + 14 * i for i in range(5, 72, 18)] + [9 + 14 * i for i in range(8, 72, 18)]
     elif number_of_pilot == 36:
-        idx = [14 * (i) for i in range(1, 72, 6)] + [6 + 14 * i for i in range(4, 72, 6)] + [11 + 14 * i for i in
-                                                                                             range(1, 72, 6)]
+        idx = [14 * i for i in range(1, 72, 6)] + [6 + 14 * i for i in range(4, 72, 6)] + [11 + 14 * i for i in
+                                                                                           range(1, 72, 6)]
 
     r = [x // 14 for x in idx]
     c = [x % 14 for x in idx]
