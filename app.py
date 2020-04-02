@@ -54,17 +54,30 @@ class ChannelInfo:
         self.noisy_input = loadmat("My_noisy_H_12.mat")["My_noisy_H"]
 
 
+channel_info = ChannelInfo()
+
+
 def channel_net_format_data():
     """
     Deep Learning
     """
-    channel_info = ChannelInfo()
 
     noisy_input = channel_info.noisy_input
     snr = channel_info.SNR
     perfect = channel_info.perfect
     number_of_pilots = channel_info.number_of_pilots
     channel_model = channel_info.channel_model
+
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111, projection='3d')
+    #
+    # x = noisy_input[:, 0]
+    # y = noisy_input[:, 1]
+    # z = noisy_input[:, 2]
+    #
+    # ax.scatter(x, y, z, c=z)
+    #
+    # plt.show()
 
     interp_noisy = interpolation(noisy_input, snr, number_of_pilots, 'rbf')
 
@@ -84,7 +97,6 @@ def channel_net_format_data():
 
 
 def channel_net_train():
-    channel_info = ChannelInfo()
     elapsed = ElapsedTime()
 
     elapsed.t.tic()
@@ -103,7 +115,6 @@ def channel_net_train():
 
 
 def channel_net_predict():
-    channel_info = ChannelInfo()
     elapsed = ElapsedTime()
 
     elapsed.t.tic()
